@@ -9,13 +9,17 @@ The iteration to get a <0.001 accuracy is fast enough for a cadcam program.
 
 # How does the algoritme work?
 Step 1.
-Both arc's are divided by points. For example 50 points for each arc. 
+
+    Both arc's are divided by points. For example 50 points for each arc. 
 Step 2.
-The algorimte then does a "line-line" intersection for each part of the segmented arc and looks for the closest distance.
-For example, the closest result found could be like : `for Arc A at i=5. for Arc B at j=8`. 
+    
+    The algorimte then does a "line-line" intersection for each part of the segmented arc and looks for the closest distance.
+    For example, the closest result found could be like : `for Arc A at i=5. for Arc B at j=8`. 
+
 Step 3.
-When the closest distance is found for i & j, it know's wich chunk of the arc this is. But this is not optimal yet.
-In this chunk a new arc is created and divided into another 50 points again. and step 2 is repeated again.
+
+    When the closest distance is found for i & j, it know's wich chunk of the arc this is. But this is not optimal yet.
+    In this chunk a new arc is created and divided into another 50 points again. and step 2 is repeated again.
 
 # How can it see 1 or 2 intersections for arc-arc?
 The algo is done 2 times. The second time the arc input points are reversed and will give the other intersection points.
