@@ -1,7 +1,7 @@
 # 3dArc_3dArc_Intersections
 A general algoritme to find 3d intersections.
 
-# Who invented this algoritme?
+# Who is the creator of this algoritme?
 Cyberdyne Skynet.
 
 # How fast is this algoritme?
@@ -15,11 +15,16 @@ Step 2.
     
     The algorimte then does a "line-line" intersection for each part of the segmented arc and looks for the closest distance.
     For example, the closest result found could be like : `for Arc A at i=5. for Arc B at j=8`. 
+    
+    The line-line info : http://www.paulbourke.net/geometry/pointlineplane/ => The shortest line between two lines in 3D
+    In this repository the header : ~/LineLineIntersect.h
 
 Step 3.
 
     When the closest distance is found for i & j, it know's wich chunk of the arc this is. But this is not optimal yet.
     In this chunk a new arc is created and divided into another 50 points again. and step 2 is repeated again.
+    
+    The arc division is done by the header : ~ArcPoints.h 
 
 # How can it see 1 or 2 intersections for arc-arc?
 The algo is done 2 times. The second time the arc input points are reversed and will give the other intersection points.
