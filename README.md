@@ -1,5 +1,8 @@
 # 3dArc_3dArc_Intersections
 A general algoritme to find 3d intersections.
+Why general?
+ 
+ - This algo can be combined with other primitive types easely as long as the primitive type can be splitted up chunks.
 
 # Who is the creator of this algoritme?
 Cyberdyne Skynet.
