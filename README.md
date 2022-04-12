@@ -2,8 +2,8 @@
 A general algoritme to find 3d intersections.
 Why general?
  
- - This algo can be combined with other primitive types easely as long as the primitive type can be splitted up chunks.
-
+ - This algo can be modified or expanded to include 3d-intersections with other primitive types.
+ 
 # Who is the creator of this algoritme?
 Cyberdyne Skynet.
 
