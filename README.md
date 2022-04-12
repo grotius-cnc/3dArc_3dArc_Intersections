@@ -24,7 +24,7 @@ Step 3.
     When the closest distance is found for i & j, it know's wich chunk of the arc this is. But this is not optimal yet.
     In this chunk a new arc is created and divided into another 50 points again. and step 2 is repeated again.
     
-    The arc division is done by the header : ~ArcPoints.h 
+    The arc division is done by the header : ~/ArcPoints.h 
 
 # How can it see 1 or 2 intersections for arc-arc?
 The algo is done 2 times. The second time the arc input points are reversed and will give the other intersection points.
