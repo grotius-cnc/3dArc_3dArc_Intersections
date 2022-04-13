@@ -41,10 +41,19 @@ From my perspective if you draw a circle with opengl, a division of 50 gives a n
 The algo gives a std::pair of 2 intersections points for each intersection. 
 If both std::pair points are the same, you have 100% accuracy.
 
+# Is the algo already failsafe?
+No it isn't. It just for info.
+
 ![3darc_3darc_intersection](https://user-images.githubusercontent.com/44880102/163068922-fc20fa84-8651-41c1-b919-2a21f9a91e09.jpg)
 
 ![3darc_3darc_intersection_1](https://user-images.githubusercontent.com/44880102/163068929-1c3f261b-4bde-4553-9129-c50c02f96427.jpg)
 
 ![screen02](https://user-images.githubusercontent.com/44880102/163072009-25321f5e-78bd-4066-8f9c-caeb48a0f2ea.jpg)
+
+![screen03](https://user-images.githubusercontent.com/44880102/163073467-b68c9e99-20cd-4567-b81a-a8f70d3ea371.jpg)
+
+When arc are parallel:
+![screen04](https://user-images.githubusercontent.com/44880102/163073598-db8c6a70-c398-4cbd-b30b-eb81e3c7c12a.jpg)
+
 
 
