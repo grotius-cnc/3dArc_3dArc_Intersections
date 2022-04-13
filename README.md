@@ -90,3 +90,8 @@ When 3d arc intersections are out of scope:
 3d arc's crossing quite close, but no intersection :
 ![screen05](https://user-images.githubusercontent.com/44880102/163076822-28bd0784-79e8-4f86-9a90-8ea62a6e5354.jpg)
 
+3d arc's intersecting at endpoints :
+![screen06](https://user-images.githubusercontent.com/44880102/163077653-1f85ff0c-7fd0-45bb-937b-7a6d45710c83.jpg)
+
+3d arc's intersecting at endpoints :
+![screen07](https://user-images.githubusercontent.com/44880102/163077656-d1d207f1-b251-4b31-b102-b0fe10a2d9b5.jpg)
