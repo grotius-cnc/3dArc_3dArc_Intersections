@@ -57,6 +57,18 @@ These arc planes intersect along a line, like : http://etc.usf.edu/clipart/42100
 The intersection point should be on that line somewhere. So that is one part. 
 Then a line->sphere intersection could be done. This algo is also to be found in this repository at : ~/LineArcIntersect.h
 
+# To mention.
+I am trying to create something modular for cad. Something that can morph into something else. Something that can intersect's something else, etc.
+Included in mainwindow:
+
+    //! Create a new arc object on the fly.
+    OBJECT *Obj = new OBJECT(arc_3p,p0,p1,p2);
+    occt_viewer->show_shape(Obj->getShape(Quantity_NOC_RED,AIS_WireFrame,2,0));
+    
+    //! Create a new spline object on the fly.
+    Obj = new OBJECT(spline,pvec);
+    occt_viewer->show_shape(Obj->getShape(Quantity_NOC_RED,AIS_WireFrame,2,0));
+
 # Pictures
 3d arc's intersecting at 2 points:
 ![3darc_3darc_intersection](https://user-images.githubusercontent.com/44880102/163068922-fc20fa84-8651-41c1-b919-2a21f9a91e09.jpg)
