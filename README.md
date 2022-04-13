@@ -22,3 +22,6 @@ A general algoritme to find 3d intersections. Works also for parallel arc planes
                 //! Intersections:
                 pvec[i]
             }
+
+Opencascade library :
+https://github.com/grotius-cnc/occt-samples-qopenglwidget/releases/download/1.1/opencascade.tar.gz
