@@ -7,6 +7,13 @@ Why general?
 # Who is the creator of this algoritme?
 Cyberdyne Skynet.
 
+# When using this algoritme?
+If you look at cad program's, and want to do more with 3d geometry, it can be handy if the sketcher
+of the app can do a 3d trim or extend for different objects.
+
+# Is there a mathematical formule for intersecting two 3d_arc's?
+I don't know if there is one. Please open a issue and paste the info if you know if one excists.
+
 # How fast is this algoritme?
 The iteration to get a <0.001 accuracy is fast enough for a cadcam program.
 
@@ -43,6 +50,12 @@ If both std::pair points are the same, you have 100% accuracy.
 
 # Is the algo already failsafe?
 No it isn't. It just for info.
+
+# Could the 3d_arc -> 3d_arc intersecting be done in another way?
+I don't know, but in some picture's below you will see the 2 arc planes. 
+These arc planes intersect along a line, like : http://etc.usf.edu/clipart/42100/42108/planelines_42108.tif
+The intersection point should be on that line somewhere. So that is one part. 
+Then a line->sphere intersection could be done. This algo is also to be found in this repository at : ~/LineArcIntersect.h
 
 # Pictures
 3d arc's intersecting at 2 points:
