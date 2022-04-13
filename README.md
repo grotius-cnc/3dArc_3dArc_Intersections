@@ -57,6 +57,13 @@ These arc planes intersect along a line, like : http://etc.usf.edu/clipart/42100
 The intersection point should be on that line somewhere. So that is one part. 
 Then a line->sphere intersection could be done. This algo is also to be found in this repository at : ~/LineArcIntersect.h
 
+Included a working algo with plane-plane intersection, then followed by a line-sphere intersection.
+Has to be finished, but works.
+
+Result :
+![screen08](https://user-images.githubusercontent.com/44880102/163088472-08548890-b673-4a97-be1a-dc6f11e7feb0.jpg)
+
+
 # To mention.
 I am trying to create something modular for cad. Something that can morph into something else. Something that can intersect's something else, etc.
 Included in mainwindow:
