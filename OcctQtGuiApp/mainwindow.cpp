@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include "Interface.h"
+#include "PointOnArc.h"
+
 
 //! Creator : Skynet Cyberdyne.
 //! Date    : 01-2021.
@@ -148,23 +150,22 @@ void MainWindow::mainloop(){
             gp_Pnt pa0_in{0,0,0};
             gp_Pnt pa1_in{50,50,0};
             gp_Pnt pa2_in{100,0,0};
-            gp_Pnt pb0_in{0,100,-10};
+            gp_Pnt pb0_in{0,100,0};
             gp_Pnt pb1_in{50,50,0};
-            gp_Pnt pb2_in{100,200,10};
+            gp_Pnt pb2_in{100,100,0};
 
 
             //! Create a pointer.
-            OBJECT *Obj;
 
             //! Create a new object.
-            Obj = new OBJECT(arc_3p,pa0_in,pa1_in,pa2_in);
-            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_RED,AIS_WireFrame,2,0));
-            gp_Pnt CenterA=Obj->getValues().getArcCenter();
+            OBJECT *ArcA = new OBJECT(arc_3p,pa0_in,pa1_in,pa2_in);
+            occt_viewer->show_shape(ArcA->getShape(Quantity_NOC_RED,AIS_WireFrame,2,0));
+            gp_Pnt CenterA=ArcA->getValues().getArcCenter();
             //! CenterPoint
             //Obj = new OBJECT(sphere,CenterA,2);
             //occt_viewer->show_shape(Obj->getShape(Quantity_NOC_WHITE,AIS_Shaded,1,0));
             //! Surface
-            Obj = new OBJECT(sphere,CenterA,CenterA.Distance(pa0_in));
+            OBJECT* Obj = new OBJECT(sphere,CenterA,CenterA.Distance(pa0_in));
             occt_viewer->show_shape(Obj->getShape(Quantity_NOC_WHITE,AIS_Shaded,1,0.95));
             Obj = new OBJECT(triangle,pa0_in,pa1_in,pa2_in);
             occt_viewer->show_shape(Obj->getShape());
@@ -172,9 +173,9 @@ void MainWindow::mainloop(){
             occt_viewer->show_shape(Plane0->getShape(Quantity_NOC_GRAY,AIS_Shaded,1,0.95));
 
 
-            Obj = new OBJECT(arc_3p,pb0_in,pb1_in,pb2_in);
-            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_BLUE,AIS_WireFrame,2,0));
-            gp_Pnt CenterB=Obj->getValues().getArcCenter();
+            OBJECT *ArcB = new OBJECT(arc_3p,pb0_in,pb1_in,pb2_in);
+            occt_viewer->show_shape(ArcB->getShape(Quantity_NOC_BLUE,AIS_WireFrame,2,0));
+            gp_Pnt CenterB=ArcB->getValues().getArcCenter();
             //! CenterPoint.
             //Obj = new OBJECT(sphere,CenterB,2);
             //occt_viewer->show_shape(Obj->getShape(Quantity_NOC_WHITE,AIS_Shaded,1,0));
@@ -186,117 +187,18 @@ void MainWindow::mainloop(){
             OBJECT *Plane1  = new OBJECT(plane,pb0_in,pb1_in,pb2_in);
             occt_viewer->show_shape(Plane1->getShape(Quantity_NOC_GRAY,AIS_Shaded,1,0.95));
 
-            //! We have plane0 & plane1. We want a plane-plane intersect using GeomInt_IntSS.
-            Handle(Geom_Plane) GeomPlaneA=GC_MakePlane(pa0_in,pa1_in,pa2_in);
-            Handle(Geom_Plane) GeomPlaneB=GC_MakePlane(pb0_in,pb1_in,pb2_in);
-            //! gp_Ax3 Ax3_PlaneA=GeomPlaneA->Position();
-            //! gp_Ax3 Ax3_PlaneB=GeomPlaneB->Position();
 
-            GeomInt_IntSS intersect(GeomPlaneA,GeomPlaneB,0.01,1,0,0);
-            if(intersect.IsDone()){
-                if(intersect.NbLines()>0){
-                    std::cout<<"intersect is done, nr of points: "<<intersect.NbPoints()<<" nr of lines: "<<intersect.NbLines()<<std::endl;
 
-                    Handle(Geom_Curve) aline= intersect.Line(1);
 
-                    gp_Pnt a=aline->Value(-500);
-                    gp_Pnt b=aline->Value(500);
 
-                    std::setprecision(3);
-                    std::cout<<std::fixed<<"point a x:"<<a.X()<<" y:"<<a.Y()<<" z:"<<a.Z()<<std::endl;
-                    std::cout<<std::fixed<<"point b x:"<<b.X()<<" y:"<<b.Y()<<" z:"<<b.Z()<<std::endl;
+            gp_PntVec pvec;
+            ArcA->getIntersections(*ArcB,pvec,1);
+           // ArcArcIntersect(pa0_in,pa1_in,pa2_in,pb0_in,pb1_in,pb2_in).getIntersections(pvec,1);
 
-                    //! Draw the line of 2 intersecting planes.
-                    OBJECT *Line = new OBJECT(line,a,b);
-                    occt_viewer->show_shape(Line->getShape(Quantity_NOC_BLACK,AIS_Shaded,1,0));
-
-                    //! Line-Sphere intersect on ArcA.
-                    std::vector<gp_Pnt> pvecA;
-                    LineArcIntersect(a,b,pa0_in,pa1_in,pa2_in).getIntersections(pvecA,1);
-                    //! Draw the intersections for ArcA.
-                    for(unsigned int i=0; i<pvecA.size(); i++){
-                        OBJECT *sphere = new OBJECT(TYPE::sphere,pvecA[i],2);
-                        occt_viewer->show_shape(sphere->getShape(Quantity_NOC_GREEN,AIS_Shaded,2,0));
-                    }
-
-                    //! Line-Sphere intersect on ArcB.
-                    std::vector<gp_Pnt> pvecB;
-                    LineArcIntersect(a,b,pb0_in,pb1_in,pb2_in).getIntersections(pvecB,1);
-                    //! Draw the intersections for ArcA.
-                    for(unsigned int i=0; i<pvecB.size(); i++){
-                        OBJECT *sphere = new OBJECT(TYPE::sphere,pvecB[i],2);
-                        occt_viewer->show_shape(sphere->getShape(Quantity_NOC_RED,AIS_Shaded,2,0));
-                    }
-                }
+            for(unsigned int i=0; i<pvec.size(); i++){
+                OBJECT *aSphere=new OBJECT(sphere,pvec[i],2);
+                occt_viewer->show_shape(aSphere->getShape(Quantity_NOC_GREEN,AIS_Shaded,2,0));
             }
-
-            //! Line CenterA to CenterB
-
-            //Obj = new OBJECT(line,CenterA,CenterB);
-            //occt_viewer->show_shape(Obj->getShape(Quantity_NOC_CYAN,AIS_WireFrame,2,0));
-
-
-//            int count=0;
-//            int division=100;
-//            gp_Pnt pa00_out,pa01_out,pa02_out, pb00_out,pb01_out,pb02_out, pa0i,pb0i;
-//            gp_Pnt pa10_out,pa11_out,pa12_out, pb10_out,pb11_out,pb12_out, pa1i,pb1i;
-//            //loop:
-
-
-//            ArcArcIntersect(pa0_in,pa1_in,pa2_in,pb0_in,pb1_in,pb2_in).getCloserArcs(
-//                        pa00_out,pa01_out,pa02_out,    //! New arc A0.
-//                        pa10_out,pa11_out,pa12_out,
-//                        pb00_out,pb01_out,pb02_out,    //! New arc B.
-//                        pb10_out,pb11_out,pb12_out,
-//                        pa0i,pb0i,                    //! Closest points.
-//                        pa1i,pb1i,                    //! Closest points.
-//                        division);                  //! Resolution to split up a arc in segments.
-
-            //! Above output can give duplicate points. Therefore check for duplicates.
-
-            //            //! Draw the above result.
-            //            Obj = new OBJECT(arc_3p,pa00_out,pa01_out,pa02_out);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_AZURE3,AIS_WireFrame,5,0));
-            //            Obj = new OBJECT(arc_3p,pa10_out,pa11_out,pa12_out);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_AZURE3,AIS_WireFrame,5,0));
-
-            //            Obj = new OBJECT(arc_3p,pb00_out,pb01_out,pb02_out);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_AZURE3,AIS_WireFrame,5,0));
-            //            Obj = new OBJECT(arc_3p,pb10_out,pb11_out,pb12_out);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_AZURE3,AIS_WireFrame,5,0));
-
-            //            //! Draw intersetions.
-            //            Obj = new OBJECT(sphere,pa0i,1);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_GREEN,AIS_Shaded,1,0));
-            //            Obj = new OBJECT(sphere,pa1i,1);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_GREEN,AIS_Shaded,1,0));
-
-            //            Obj = new OBJECT(sphere,pb0i,1);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_RED,AIS_Shaded,1,0));
-            //            Obj = new OBJECT(sphere,pb1i,1);
-            //            occt_viewer->show_shape(Obj->getShape(Quantity_NOC_RED,AIS_Shaded,1,0));
-
-
-            //           double dist=pa0i.Distance(pb0i);
-            //          std::cout<<"distance pai-pbi: "<<dist<<std::endl;
-            //            if(dist>0.006){
-            //                pa0_in=pa0_out;
-            //                pa1_in=pa1_out;
-            //                pa2_in=pa2_out;
-
-            //                pb0_in=pb0_out;
-            //                pb1_in=pb1_out;
-            //                pb2_in=pb2_out;
-            //                count++;
-            //                if(count<3){
-            //                    std::cout<<"count:"<<count<<std::endl;
-            //                    goto loop;
-            //                } else {
-            //                    std::cout<<"out of scope"<<std::endl;
-            //                }
-            //            } else {
-            //                std::cout<<"intersection is ok"<<std::endl;
-            //            }
 
         }
         if(occt_controls->btn_zoom_min->isDown()==true){

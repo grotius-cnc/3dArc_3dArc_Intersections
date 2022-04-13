@@ -17,10 +17,12 @@
 #include "BRepBuilderAPI_MakeWire.hxx"
 #include "LineLineIntersect.h"
 #include "LineArcIntersect.h"
+#include "ArcArcIntersect.h"
 #include "ArcCenter.h"
 #include "ArcPoints.h"
-#include "ArcArcIntersect.h"
+#include "GeneralIntersect.h"
 #include "PointOnPlane.h"
+#include "PointOnLine.h"
 
 enum TYPE{
     none,
@@ -369,14 +371,13 @@ public:
 
         //! Arc-line 3d intersection and visa-versa
         if(myType==TYPE::arc_3p && theRefObject.myType==TYPE::arc_3p){
-            //            bool result=ArcArcIntersect(
-            //                        myValues.getFirstPoint(),
-            //                        myValues.getSecondPoint(),
-            //                        myValues.getThirdPoint(),
-            //                        theRefObject.getValues().getFirstPoint(),
-            //                        theRefObject.getValues().getSecondPoint(),
-            //                        theRefObject.getValues().getThirdPoint()).getArcPoints(pvec,debug);
-            //            return result;
+            bool result=ArcArcIntersect(myValues.getFirstPoint(),
+                                        myValues.getSecondPoint(),
+                                        myValues.getThirdPoint(),
+                                        theRefObject.getValues().getFirstPoint(),
+                                        theRefObject.getValues().getSecondPoint(),
+                                        theRefObject.getValues().getThirdPoint()).getIntersections(pvec, debug);
+            return result;
         }
 
         return 0;
@@ -433,7 +434,7 @@ public:
         }
         if(myType==TYPE::arc_3p){
             //! Check if arc points are not colineair. If the arc is a line, opencascade gives error.
-            bool onLine=PointOnLine(myValues.getFirstPoint(),myValues.getSecondPoint(),myValues.getThirdPoint(),0.000001).isOnLine();
+            bool onLine=PointOnLine(myValues.getFirstPoint(),myValues.getSecondPoint(),myValues.getThirdPoint(),0.0001).isOnLine();
             if(onLine){
                 std::cout<<"opencascade error, arcpoints are colineair. Arc seems a line.";
                 return nullptr;
@@ -441,6 +442,7 @@ public:
                 Handle(Geom_TrimmedCurve) aArcOfCircle = GC_MakeArcOfCircle(myValues.getFirstPoint(),
                                                                             myValues.getSecondPoint(),
                                                                             myValues.getThirdPoint());
+
                 TopoDS_Edge aEdge = BRepBuilderAPI_MakeEdge(aArcOfCircle);
                 Handle(AIS_Shape) aShape=new AIS_Shape(aEdge);
                 aShape->SetWidth(theWidth);

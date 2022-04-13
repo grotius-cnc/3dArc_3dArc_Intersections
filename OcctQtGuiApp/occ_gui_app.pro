@@ -19,12 +19,14 @@ HEADERS += \
     ArcArcIntersect.h \
     ArcCenter.h \
     ArcPoints.h \
+    GeneralIntersect.h \
     Interface.h \
     LineArcIntersect.h \
     LineFaceIntersect.h \
     LineLineIntersect.h \
     OcctQtControl.h \
     OcctQtViewer.h \
+    PointOnArc.h \
     PointOnLine.h \
     PointOnPlane.h \
     Tranceparancy.h \
