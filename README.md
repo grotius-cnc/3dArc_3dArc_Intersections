@@ -59,6 +59,8 @@ Then a line->sphere intersection could be done. This algo is also to be found in
 
 Included a working algo with plane-plane intersection, then followed by a line-sphere intersection.
 Has to be finished, but works.
+For example this algo doens't work if planes are parallel or colinair. Then this algo has to be skipped and a conventional 2d algo
+has to be used. But that should be no problem.
 
 Result :
 ![screen08](https://user-images.githubusercontent.com/44880102/163088472-08548890-b673-4a97-be1a-dc6f11e7feb0.jpg)
