@@ -87,5 +87,6 @@ When 3d arc intersections are out of scope:
       The std::pair green+red is not at the same location. This means, no intersection.
 ![screen04](https://user-images.githubusercontent.com/44880102/163073598-db8c6a70-c398-4cbd-b30b-eb81e3c7c12a.jpg)
 
-
+3d arc's crossing quite close, but no intersection :
+![screen05](https://user-images.githubusercontent.com/44880102/163076822-28bd0784-79e8-4f86-9a90-8ea62a6e5354.jpg)
 
