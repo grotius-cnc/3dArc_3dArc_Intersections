@@ -53,6 +53,8 @@ No it isn't. It just for info.
 ![screen03](https://user-images.githubusercontent.com/44880102/163073467-b68c9e99-20cd-4567-b81a-a8f70d3ea371.jpg)
 
 When arc are parallel:
+ 
+      The std::pair green+red is not at the same location. This means, no intersection.
 ![screen04](https://user-images.githubusercontent.com/44880102/163073598-db8c6a70-c398-4cbd-b30b-eb81e3c7c12a.jpg)
 
 
