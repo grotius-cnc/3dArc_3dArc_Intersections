@@ -65,44 +65,47 @@ public:
         else if (D == 0)
         {
             //! Check if intersection is on the arc-plane.
-            bool on_plane=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
-            if(on_plane){
-                bool on_line=PointOnLine(p0,p1,solution1,0.00001).isOnLine();
-                if(on_line){
-                    pvec.push_back(solution1);
-                    if(debug){
-                        std::cout<<"intersection solution 1."<<std::endl;
-                    }
+//            bool on_plane=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
+//            if(on_plane){
+//                bool on_line=PointOnLine(p0,p1,solution1,0.01).isOnLine();
+//                if(on_line){
+//                    pvec.push_back(solution1);
+//                    if(debug){
+//                        std::cout<<"intersection solution 1."<<std::endl;
+//                    }
 
-                }
-            }
+//                }
+//            }
+            pvec.push_back(solution1);
             return 1;
         }
         else
         {
             //! Check if intersection of first solution is on the arc-plane.
-            bool on_planeA=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
-            if(on_planeA){
-                bool on_lineA=PointOnLine(p0,p1,solution1,0.00001).isOnLine();
-                if(on_lineA){
-                    pvec.push_back(solution1);
-                    if(debug){
-                        std::cout<<"intersection found solution 1."<<std::endl;
-                    }
-                }
-            }
-            //! Check if intersection of second solution is on the arc-plane.
-            bool on_planeB=PointOnPlane(parc0,parc1,parc2,solution2).IsOnPlane(debug);
-            if(on_planeB){
+//            bool on_planeA=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
+//            if(on_planeA){
+//                bool on_lineA=PointOnLine(p0,p1,solution1,0.01).isOnLine();
+//                if(on_lineA){
+//                    pvec.push_back(solution1);
+//                    if(debug){
+//                        std::cout<<"intersection found solution 1."<<std::endl;
+//                    }
+//                }
+//            }
+//            //! Check if intersection of second solution is on the arc-plane.
+//            bool on_planeB=PointOnPlane(parc0,parc1,parc2,solution2).IsOnPlane(debug);
+//            if(on_planeB){
 
-                bool on_lineB=PointOnLine(p0,p1,solution2,0.00001).isOnLine();
-                if(on_lineB){
-                    pvec.push_back(solution2);
-                    if(debug){
-                        std::cout<<"intersection found solution 2."<<std::endl;
-                    }
-                }
-            }
+//                bool on_lineB=PointOnLine(p0,p1,solution2,0.01).isOnLine();
+//                if(on_lineB){
+//                    pvec.push_back(solution2);
+//                    if(debug){
+//                        std::cout<<"intersection found solution 2."<<std::endl;
+//                    }
+//                }
+//            }
+            pvec.push_back(solution1);
+            pvec.push_back(solution2);
             return 1;
         }
         return 0;
