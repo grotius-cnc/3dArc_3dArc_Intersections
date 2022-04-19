@@ -11,7 +11,29 @@ public:
     //! Line A: p1,p2   Line B: p2,p3
     LineLineIntersect(gp_Pnt _p0, gp_Pnt _p1, gp_Pnt _p2, gp_Pnt _p3) : p0(_p0), p1(_p1), p2(_p2), p3(_p3)  {}
 
+    //! Standard 0.001, Used by plane and point calculations.
+    void setTollerance(double tollerance){
+        myTol=tollerance;
+    }
+
+    //! Get the line-line intersections point.
+    bool getIntersections(gp_PntVec &pvec, bool debug){
+        std::pair<gp_Pnt,gp_Pnt> pair;
+        double lenght;
+        myDebug=debug;
+        getClosestLenght(lenght, pair);
+
+        if(lenght<myTol){
+            pvec.push_back(pair.first);
+            return 1;
+        }
+        return 0;
+    }
+
     //! Gives you the lenght of the closest path between the 2 compared lines.
+    //! pair.first is the closest point found on line A.
+    //! pair.second is the closest point found on line B.
+    //! The distance between point A,B = lenght.
     bool getClosestLenght(double &lenght, std::pair<gp_Pnt,gp_Pnt> &pair){
         gp_Pnt p13,p43,p21;
         const double EPS=0.0001;
@@ -58,7 +80,9 @@ public:
         double l2=sqrt(pow(p1.X()-pa.X(),2)+pow(p1.Y()-pa.Y(),2)+pow(p1.Z()-pa.Z(),2));
         double l3=sqrt(pow(p1.X()-p0.X(),2)+pow(p1.Y()-p0.Y(),2)+pow(p1.Z()-p0.Z(),2));
         if(l3==l1+l2){
-            std::cout<<"pa is on the line p1-p2"<<std::endl;
+            if(myDebug){
+                std::cout<<"pa is on the line p1-p2"<<std::endl;
+            }
         }
 
         //! Check if pb is on line p3-p4.
@@ -66,18 +90,26 @@ public:
         double l5=sqrt(pow(p3.X()-pb.X(),2)+pow(p3.Y()-pb.Y(),2)+pow(p3.Z()-pb.Z(),2));
         double l6=sqrt(pow(p3.X()-p2.X(),2)+pow(p3.Y()-p2.Y(),2)+pow(p3.Z()-p2.Z(),2));
         if(l6==l4+l5){
-            std::cout<<"pb is on the line p3-p4"<<std::endl;
+            if(myDebug){
+                std::cout<<"pb is on the line p3-p4"<<std::endl;
+            }
         }
+
+        std::setprecision(3);
 
         //! Result.
         if(l3>(l1+l2)-EPS && l3<(l1+l2)+EPS && l6>(l4+l5)-EPS && l6<(l4+l5)+EPS){
-            std::cout<<"pa.x:"<<pa.X()<<" pa.y:"<<pa.Y()<<" pa.z:"<<pa.Z()<<std::endl;
-            std::cout<<"pb.x:"<<pb.X()<<" pb.y:"<<pb.Y()<<" pb.z:"<<pb.Z()<<std::endl;
+            if(myDebug){
+                std::cout<<std::fixed<<"pa.x:"<<pa.X()<<" pa.y:"<<pa.Y()<<" pa.z:"<<pa.Z()<<std::endl;
+                std::cout<<std::fixed<<"pb.x:"<<pb.X()<<" pb.y:"<<pb.Y()<<" pb.z:"<<pb.Z()<<std::endl;
+            }
 
             //! Shortest imaginairy line lenght between line p1p2 & line p3p4.
-            lenght=sqrt(pow(pb.X()-pa.X(),2)+pow(pb.Y()-pa.Y(),2)+pow(pb.Z()-pa.Z(),2));
-            std::setprecision(3);
-            std::cout<<std::fixed<<"pa-pb lenght:"<<lenght<<std::endl;
+            lenght=pa.Distance(pb);
+
+            if(myDebug){
+                std::cout<<std::fixed<<"pa-pb lenght:"<<lenght<<std::endl;
+            }
 
             pair.first=pa;
             pair.second=pb;
@@ -89,6 +121,8 @@ public:
 
 private:
     gp_Pnt p0,p1,p2,p3,pa,pb;
+    double myTol=0.001;
+    bool myDebug;
 };
 
 #endif // LINELINEINTERSECT_H

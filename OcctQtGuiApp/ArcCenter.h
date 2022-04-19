@@ -6,6 +6,10 @@
 #include "gp_Pnt.hxx"
 #include "Vector3D.h"
 
+//! Make conversion's easy:
+#define toRadians M_PI/180.0
+#define toDegrees (180.0/M_PI)
+
 class ArcCenter
 {
 public:
@@ -48,7 +52,9 @@ public:
         Vector3D v3 = vp2-vp1;
         Vector3D v4 = vp3-vp1;
 
-        arc_angle= std::acos(v3.dot(v4)/(v3.magnitude()*v4.magnitude()));
+        //! Not sure if this is ok.
+        arc_angle= std::acos(v3.dot(v4)/(v3.mag()*v4.mag()));
+        //! std::cout<<"arc angle radians:"<<arc_angle<<"arc angle degrees"<<arc_angle*toDegrees<<std::endl;
 
         //! Normalize v3:
         double l=sqrt((v3.x*v3.x)+(v3.y*v3.y)+(v3.z*v3.z));

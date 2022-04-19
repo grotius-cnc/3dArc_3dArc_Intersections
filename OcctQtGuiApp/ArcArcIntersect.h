@@ -2,9 +2,8 @@
 #define ARCARCINTERSECT_H
 
 #include "Types.h"
-#include <ArcPoints.h>
 #include <PointOnPlane.h>
-#include <LineArcIntersect.h>
+#include <LineSphereIntersect.h>
 #include <ArcCenter.h>
 #include "GeomInt_IntSS.hxx"
 #include "GC_MakePlane.hxx"
@@ -71,11 +70,11 @@ public:
 
                 //! Line-Sphere intersect on ArcA.
                 gp_PntVec pvecA;
-                LineArcIntersect(a,b,pa0,pa1,pa2).getIntersections(pvecA,debug);
+                LineSphereIntersect(a,b,pa0,pa1,pa2).getIntersections(pvecA,debug);
 
                 //! Line-Sphere intersect on ArcB.
                 gp_PntVec pvecB;
-                LineArcIntersect(a,b,pb0,pb1,pb2).getIntersections(pvecB,debug);
+                LineSphereIntersect(a,b,pb0,pb1,pb2).getIntersections(pvecB,debug);
 
                 //! Used for debug.
                 std::setprecision(3);

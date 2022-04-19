@@ -12,6 +12,9 @@ SOURCES += \
     OcctQtControl.cpp \
     OcctQtViewer.cpp \
     Tranceparancy.cpp \
+    libspline/bezier_spline.cpp \
+    libspline/cubic_spline.cpp \
+    libspline/spline.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -24,14 +27,20 @@ HEADERS += \
     LineArcIntersect.h \
     LineFaceIntersect.h \
     LineLineIntersect.h \
+    LineSphereIntersect.h \
     OcctQtControl.h \
     OcctQtViewer.h \
     PointOnArc.h \
     PointOnLine.h \
     PointOnPlane.h \
+    SplinePoints.h \
+    SplineSplineIntersect.h \
     Tranceparancy.h \
     Types.h \
     Vector3D.h \
+    libspline/bezier_spline.h \
+    libspline/cubic_spline.h \
+    libspline/spline.h \
     mainwindow.h
 
 FORMS += \

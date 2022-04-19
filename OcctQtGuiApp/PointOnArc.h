@@ -23,22 +23,15 @@ public:
     //! Normal.
     bool isOnArc(){
 
-        double U=getCirlcleParameterFromPoint(pi);  std::cout<<"U:"<<U<<std::endl;
-        double U0=getCirlcleParameterFromPoint(p0); std::cout<<"U0:"<<U0<<std::endl;
-        double U1=getCirlcleParameterFromPoint(p1); std::cout<<"U1:"<<U1<<std::endl;
-        double U2=getCirlcleParameterFromPoint(p2); std::cout<<"U2:"<<U2<<std::endl;
 
-        if(U1>U0 && U2>U1 && U>=U0 && U<=U2){
-            return 1;
-        }
-        if(U1<U0 && U2<U1 && U<=U0 && U>=U2){
-            return 1;
-        }
-
-            return 0;
-
+        return 0;
     };
 private:
+
+    //! The same as getCircleparameter, this one already includes getOrientation.
+    double getCirlcleParameterFromPoint(gp_Pnt thePoint){
+        return getCircleParameter(getOrientation(),thePoint);
+    }
 
     //! Borrowed from <ElCLib.hxx>
     double getCircleParameter(gp_Ax2 Pos, gp_Pnt P)
@@ -80,21 +73,7 @@ private:
         return ArcPosition;
     }
 
-    //! The same as getCircleparameter, this one already includes getOrientation.
-    double getCirlcleParameterFromPoint(gp_Pnt thePoint){
-        return getCircleParameter(getOrientation(),thePoint);
-    }
-
-    gp_Pnt getPointFromCircleParameter(gp_Pnt arcStart, gp_Pnt arcEnd, double Uinput){
-        //! Max circle value is endpoint.
-        //gp_Circ C(ArcPos,radius);
-        double U_start = getCircleParameter(getOrientation(),arcStart);
-        double U_end = getCircleParameter(getOrientation(),arcEnd);
-
-        //! When cirlce end < start add a full circle.
-        if(U_end<U_start){
-            U_end+=2*M_PI;
-        }
+    gp_Pnt getPointFromCircleParameter(double Uinput){
 
         gp_XYZ XDir = getOrientation().XDirection().XYZ();
         gp_XYZ YDir = getOrientation().YDirection().XYZ();

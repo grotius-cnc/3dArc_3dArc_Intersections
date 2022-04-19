@@ -18,16 +18,23 @@
 #include "LineLineIntersect.h"
 #include "LineArcIntersect.h"
 #include "ArcArcIntersect.h"
+#include "SplineSplineIntersect.h"
 #include "ArcCenter.h"
-#include "ArcPoints.h"
 #include "GeneralIntersect.h"
 #include "PointOnPlane.h"
 #include "PointOnLine.h"
+#include "SplinePoints.h"
+#include <libspline/cubic_spline.h>
+#include <libspline/bezier_spline.h>
+
+//! Make conversion's easy:
+#define toRadians M_PI/180.0
+#define toDegrees (180.0/M_PI)
 
 enum TYPE{
     none,
-    point,
-    line,
+    point_1p,
+    line_2p,
     triangle,
     rectangle,
     plane,
@@ -43,7 +50,6 @@ enum TYPE{
     bezier,
     slot,
     arrow,
-    //! 3DSOLIDS
     sphere,
     box,
 };
@@ -106,7 +112,7 @@ public:
     void setPointValues(int theIndex, gp_Pnt thePoint){
         myPointVec.at(theIndex)=thePoint;
     };
-    void setPointValues(std::vector<gp_Pnt> thePoints){
+    void setPointValues(gp_PntVec thePoints){
         myPointVec.clear();
         myPointVec.resize(thePoints.size());
         myPointVec=thePoints;
@@ -137,6 +143,9 @@ public:
     gp_Pnt getThirdPoint(){
         return myPointVec.at(2);
     }
+    gp_PntVec getPointVec(){
+        return myPointVec;
+    }
     double getRadiusFrom3pArc(){
         return ArcCenter(myPointVec[0],myPointVec[1],myPointVec[2]).Arc_radius();
     }
@@ -163,7 +172,7 @@ public:
     }
 
 private:
-    std::vector<gp_Pnt> myPointVec;
+    gp_PntVec myPointVec;
     std::vector<double> myDoubleVec;
     std::vector<unsigned int> myUIntegerVec;
 };
@@ -174,6 +183,11 @@ public:
 
     OBJECT(){
         myType=none;
+        setTypeValueModel();
+    }
+
+    OBJECT(TYPE theType){
+        myType=theType;
         setTypeValueModel();
     }
 
@@ -213,10 +227,19 @@ public:
     //! Rectangle, Slot
     //!     P0=theLowerLeftPoint
     //!     P1=theUpperRightPoint
-    OBJECT(TYPE theType, gp_Pnt P0, gp_Pnt P1){
+    OBJECT(TYPE theType, gp_Pnt theFirstPoint, gp_Pnt theSecondPoint){
         myType=theType;
-        setTypeValueModel();
-        myValues.setPointValues({P0,P1});
+        if(theType==TYPE::line_2p){
+            myPointVec.reserve(2);
+            myPointVec.push_back(theFirstPoint);
+            myPointVec.push_back(theSecondPoint);
+        }
+        if(theType==TYPE::sphere){
+            myPointVec.reserve(2);
+            myPointVec.push_back(theFirstPoint);
+            myPointVec.push_back(theSecondPoint);
+            myRadius=theFirstPoint.Distance(theSecondPoint);
+        }
     }
 
     //! Arc_3p, Circle_3p, Circle_2p_cp
@@ -266,10 +289,13 @@ public:
     //! Spline, Polyline, Bezier
     //!     PVEC=thePointVec
     //! This input model is compatible with Line, Arc_3p and more.
-    OBJECT(TYPE theType, std::vector<gp_Pnt> PVEC){
+    OBJECT(TYPE theType, gp_PntVec thePvec){
         myType=theType;
-        setTypeValueModel();
-        myValues.setPointValues(PVEC);
+        if(theType==TYPE::spline){
+            myPointVec.reserve(thePvec.size());
+            myPointVec=thePvec;
+            SplinePoints(thePvec).getLowerLevelPoints(myPointVecGl);
+        }
     }
 
 
@@ -313,9 +339,10 @@ public:
         myValues.setPointValues(theIndex,thePoint);
     };
     //! setPoints{{0,0,0},{0,0,0}}
-    void setPoints(std::vector<gp_Pnt> thePoints){
+    void setPoints(gp_PntVec thePoints){
         myValues.setPointValues(thePoints);
     };
+
     VALUES getValues(){
         return myValues;
     }
@@ -335,20 +362,20 @@ public:
     };
 
     //! With debug.
-    bool getIntersections(OBJECT theRefObject, std::vector<gp_Pnt> &pvec, bool debug){
+    bool getIntersections(OBJECT theRefObject, gp_PntVec &pvec, bool debug){
 
         //! Line-line 3d intersection
-        if(myType==TYPE::line && theRefObject.myType==TYPE::line){
-            //            bool result=LineLineIntersect(
-            //                        this->getValues().getFirstPoint(),
-            //                        this->getValues().getSecondPoint(),
-            //                        theRefObject.getValues().getFirstPoint(),
-            //                        theRefObject.getValues().getSecondPoint()).getIntersections(pvec,debug);
-            //            return result;
+        if(myType==TYPE::line_2p && theRefObject.myType==TYPE::line_2p){
+            bool result=LineLineIntersect(
+                        this->getValues().getFirstPoint(),
+                        this->getValues().getSecondPoint(),
+                        theRefObject.getValues().getFirstPoint(),
+                        theRefObject.getValues().getSecondPoint()).getIntersections(pvec,debug);
+            return result;
         };
 
         //! Arc-line 3d intersection and visa-versa
-        if(myType==TYPE::line && theRefObject.myType==TYPE::arc_3p){
+        if(myType==TYPE::line_2p && theRefObject.myType==TYPE::arc_3p){
             bool result=LineArcIntersect(
                         myValues.getFirstPoint(),
                         myValues.getSecondPoint(),
@@ -357,7 +384,7 @@ public:
                         theRefObject.getValues().getThirdPoint()).getIntersections(pvec,debug);
             return result;
         };
-        if(myType==TYPE::arc_3p && theRefObject.myType==TYPE::line){
+        if(myType==TYPE::arc_3p && theRefObject.myType==TYPE::line_2p){
             bool result=LineArcIntersect(
                         theRefObject.getValues().getFirstPoint(),
                         theRefObject.getValues().getSecondPoint(),
@@ -368,8 +395,7 @@ public:
             return result;
         };
 
-
-        //! Arc-line 3d intersection and visa-versa
+        //! Arc-arc 3d intersection
         if(myType==TYPE::arc_3p && theRefObject.myType==TYPE::arc_3p){
             bool result=ArcArcIntersect(myValues.getFirstPoint(),
                                         myValues.getSecondPoint(),
@@ -379,6 +405,14 @@ public:
                                         theRefObject.getValues().getThirdPoint()).getIntersections(pvec, debug);
             return result;
         }
+
+        //! Spline-spline intersetions. Includes self intersections.
+        if(myType==TYPE::spline && theRefObject.myType==TYPE::spline){
+            bool result=SplineSplineIntersect(this->myPointVecGl,theRefObject.myPointVecGl).getIntersections(pvec, debug);
+            return result;
+        }
+
+
 
         return 0;
     };
@@ -401,7 +435,7 @@ public:
             theWidth=1;
         }
 
-        if(myType==TYPE::point){
+        if(myType==TYPE::point_1p){
             TopoDS_Vertex aVertex = BRepBuilderAPI_MakeVertex(myValues.getFirstPoint());
             Handle(AIS_Shape) aShape=new AIS_Shape(aVertex);
             aShape->SetWidth(theWidth);
@@ -410,7 +444,7 @@ public:
             aShape->SetTransparency(theTranceparancy);
             return aShape;
         }
-        if(myType==TYPE::line){
+        if(myType==TYPE::line_2p){
             TopoDS_Edge aEdge = BRepBuilderAPI_MakeEdge(myValues.getFirstPoint(),myValues.getSecondPoint());
             Handle(AIS_Shape) aShape=new AIS_Shape(aEdge);
             aShape->SetWidth(theWidth);
@@ -436,12 +470,18 @@ public:
             //! Check if arc points are not colineair. If the arc is a line, opencascade gives error.
             bool onLine=PointOnLine(myValues.getFirstPoint(),myValues.getSecondPoint(),myValues.getThirdPoint(),0.0001).isOnLine();
             if(onLine){
-                std::cout<<"opencascade error, arcpoints are colineair. Arc seems a line.";
+                std::cout<<"opencascade error, arc points are colineair. Arc seems a line.";
                 return nullptr;
             } else {
                 Handle(Geom_TrimmedCurve) aArcOfCircle = GC_MakeArcOfCircle(myValues.getFirstPoint(),
                                                                             myValues.getSecondPoint(),
                                                                             myValues.getThirdPoint());
+                std::cout<<"Construction Firstparamter: "<<aArcOfCircle->FirstParameter()<<
+                           " x:"<<aArcOfCircle->StartPoint().X()<<" y:"<<aArcOfCircle->StartPoint().Y()<< " z:"<<aArcOfCircle->StartPoint().Z()<<std::endl;
+
+                std::cout<<"Construction Lastparamter: "<<aArcOfCircle->LastParameter()<<
+                             " x:"<<aArcOfCircle->EndPoint().X()<<" y:"<<aArcOfCircle->EndPoint().Y()<< " z:"<<aArcOfCircle->EndPoint().Z()<<std::endl;
+
 
                 TopoDS_Edge aEdge = BRepBuilderAPI_MakeEdge(aArcOfCircle);
                 Handle(AIS_Shape) aShape=new AIS_Shape(aEdge);
@@ -492,6 +532,30 @@ public:
             aShape->SetTransparency(theTranceparancy);
             return aShape;
         }
+        if(myType==TYPE::spline){
+            //! Create a linewire.
+            BRepBuilderAPI_MakeWire aWire;
+            TopoDS_Edge edge;
+            gp_Pnt p1=myPointVecGl[0], p2={0,0,0};
+            for(unsigned int i=1; i<myPointVecGl.size(); i++){
+                //! A system to avoid duplicates.
+                p2=myPointVecGl.at(i);
+                if(p1.X()!=p2.X() || p1.Y()!=p2.Y() || p1.Z()!=p2.Z()){
+                    edge = BRepBuilderAPI_MakeEdge(p1,p2);
+                    aWire.Add(edge);
+                    p1=p2;
+                } else {
+                    std::cout<<"Avoiding duplicate points from spline input."<<std::endl;
+                }
+            }
+            Handle(AIS_Shape) aShape=new AIS_Shape(aWire);
+            aShape->SetWidth(theWidth);
+            aShape->SetDisplayMode(theDisplayMode);
+            aShape->SetColor(theColor);
+            aShape->SetTransparency(theTranceparancy);
+            return aShape;
+        }
+
         return nullptr;
     };
 
@@ -500,16 +564,19 @@ private:
     TYPE myType;
     PROPERTIES myProperties;
     VALUES myValues;
-
+    gp_PntVec myPointVec;
+    //! Store points at opengl level.
+    gp_PntVec myPointVecGl;
+    double myRadius;
 
     void setTypeValueModel(){
         if(myType==TYPE::none){
             myValues.setPointVectorSize(0);
         };
-        if(myType==TYPE::point){
+        if(myType==TYPE::point_1p){
             myValues.setPointVectorSize(1);
         };
-        if(myType==TYPE::line){
+        if(myType==TYPE::line_2p){
             myValues.setPointVectorSize(2);
         };
         if(myType==TYPE::plane){
@@ -520,6 +587,10 @@ private:
             myValues.setDoubleVectorSize(1);    //! Area.
         };
         if(myType==TYPE::arc_3p){
+            myValues.setPointVectorSize(3);
+            myValues.setDoubleVectorSize(1);    //! Radius.
+        };
+        if(myType==TYPE::circle_3p){
             myValues.setPointVectorSize(3);
             myValues.setDoubleVectorSize(1);    //! Radius.
         };
@@ -541,6 +612,9 @@ private:
         };
         if(myType==TYPE::bezier){
             myValues.setPointVectorSize(4);
+        };
+        if(myType==TYPE::spline){
+            myValues.setPointVectorSize(0);
         };
     };
 };

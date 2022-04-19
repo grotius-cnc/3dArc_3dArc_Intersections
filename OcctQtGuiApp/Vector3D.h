@@ -2,6 +2,7 @@
 #define VECTOR3D_H
 
 #include <math.h>
+#include <gp_Pnt.hxx>
 
 /**
  * @brief Basic 3D vector class
@@ -10,7 +11,39 @@ class Vector3D
 {
 public:
     double x,y,z;
+    gp_Pnt p;
+    //! Constructor.
+    Vector3D(gp_Pnt p): p(p){
+        x=p.X();
+        y=p.Y();
+        z=p.Z();
+    }
+    //! Dot product.
+    double dot(Vector3D v0, Vector3D v1)
+    {
+        return v1.x*v0.x + v1.y*v0.y + v1.z*v0.z;
+    }
+    //! Magnitude.
+    double mag(Vector3D v)
+    {
+        return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+    }
+    //! Cross product.
+    Vector3D crossproduct(Vector3D v0, Vector3D v1){
+        return Vector3D((v0.y*v1.z)-(v0.z*v1.y), (v0.z*v1.x)-(v0.x*v1.z), (v0.x*v1.y)-(v0.y*v1.x));
+    }
+    double angle(Vector3D v0, Vector3D v1){
+        return /*std::acos(*/dot(v0,v1)/(mag(v0)*mag(v1))/*)*/;
+    }
+    Vector3D min(Vector3D v0, Vector3D v1){
+        Vector3D result;
+        result.x=v1.x-v0.x;
+        result.y=v1.y-v0.y;
+        result.z=v1.z-v0.z;
+        return result;
+    }
 
+    //!
     Vector3D(double _x=0, double _y=0, double _z=0)
         : x(_x), y(_y), z(_z)
     {
@@ -41,13 +74,13 @@ public:
         return sqrt(dot(*this));
     }
     //! Magnitude.
-    double magnitude()
+    double mag()
     {
         return sqrt(x*x + y*y + z*z);
     }
 
     //! Cross product.
-    Vector3D crossproduct(Vector3D &v2){
+    Vector3D crossproduct(Vector3D v2){
         return Vector3D((y*v2.z)-(z*v2.y), (z*v2.x)-(x*v2.z), (x*v2.y)-(y*v2.x));
     }
 

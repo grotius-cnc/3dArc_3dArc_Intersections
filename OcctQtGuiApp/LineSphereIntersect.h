@@ -1,17 +1,17 @@
-#ifndef LINEARCINTERSECT_H
-#define LINEARCINTERSECT_H
+#ifndef LINESPHEREINTERSECT_H
+#define LINESPHEREINTERSECT_H
 
 #include "Interface.h"
 #include "ArcCenter.h"
-#include "PointOnPlane.h"
+#include "PointOnArc.h"
 
-class LineArcIntersect
+class LineSphereIntersect
 {
 public:
     //! Given a 2p_line & 3p_arc in 3d.
     //! This function is like intersecting a line with a sphere, after that it checks if solution is on arc plane.
     //! This line-sphere intersect implementation is inherit to raytracing computergraphics.
-    LineArcIntersect(gp_Pnt line_p0, gp_Pnt line_p1, gp_Pnt arc_p0, gp_Pnt arc_p1, gp_Pnt arc_p2) :
+    LineSphereIntersect(gp_Pnt line_p0, gp_Pnt line_p1, gp_Pnt arc_p0, gp_Pnt arc_p1, gp_Pnt arc_p2) :
         p0(line_p0), p1(line_p1), parc0(arc_p0), parc1(arc_p1), parc2(arc_p2) {
 
         cp=ArcCenter(parc0,parc1,parc2).Arc_cp();
@@ -19,7 +19,6 @@ public:
     }
 
     //! Return intersections.
-    //! This function is a line-sphere intersection algoritme. Therefore we check the output is on the arc plane.
     bool getIntersections(gp_PntVec &pvec, bool debug)
     {
         double cx = cp.X();
@@ -55,27 +54,23 @@ public:
         solution2.SetY(p0.Y() * (1 - t2) + t2 * p1.Y());
         solution2.SetZ(p0.Z() * (1 - t2) + t2 * p1.Z());
 
-        if (D < 0 || t1 > 1 || t2 >1) {
+        if (D < 0 || t1 > 1 || t2 >1)
+        {
             if(debug){
                 std::cout<<"no intersections found in general."<<std::endl;
             }
             return 0;
-        } else if (D == 0){
-            bool ok=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
-            if(ok){
-                pvec.push_back(solution1);
-                return 1;
-            }
-        } else {
-            bool ok=PointOnPlane(parc0,parc1,parc2,solution1).IsOnPlane(debug);
-            if(ok){
-                pvec.push_back(solution1);
-                bool ok=PointOnPlane(parc0,parc1,parc2,solution2).IsOnPlane(debug);
-                if(ok){
-                    pvec.push_back(solution2);
-                    return 1;
-                }
-            }
+        }
+        else if (D == 0)
+        {
+            pvec.push_back(solution1);
+            return 1;
+        }
+        else
+        {
+            pvec.push_back(solution1);
+            pvec.push_back(solution2);
+            return 1;
         }
         return 0;
     };
@@ -84,7 +79,7 @@ private:
     double myRadius;
 };
 
-#endif // LINEARCINTERSECT_H
+#endif // LINESPHEREINTERSECT_H
 
 
 
